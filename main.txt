@@ -1,0 +1,50 @@
+int main() {
+    srand((unsigned) time(NULL));
+    Grille g = creeUneGrilledeTest();
+    string c;
+    cout << g << endl;
+    cout << "Début jeu: " << endl;
+
+    vector<Termite*> termites; // On crée un vecteur de pointeurs vers des Termite
+
+	do {
+		vector<int> ids = {}; //On crée un vecteur dans lequel on mettra le numéro de chaque termite qu'on a utilisé dans le tour
+
+		for (auto& t : termites) { //on parcourt les termite déjà traitées dans ce tour
+			t->vieTermite(g); //On met à jour l'objet Termite correspondant dans le vecteur
+		}
+
+		for (int i=0; i < tailleGrille; i++) {
+			for(int j = 0; j < tailleGrille; j++) {
+				if (g.contientTermite(Coord(i,j))) { //si contient termite
+					bool nouvterm = true; //booleen pour savoir si la termite a déjà été manipulée dans le même tour
+					int termite_id = g.numeroTermite(Coord(i,j)); //on récupère l'id de la termite
+					for (auto& t : termites) { //on parcourt les termite déjà traitées dans ce tour
+						if (t->getId() == termite_id) {
+							nouvterm = false;
+							break;
+						}
+					}
+					if (nouvterm) { //si la termite n'a pas été utilisé dans le tour
+						Termite* t = new Termite(termite_id, Coord(i,j)); //on crée un nouveau pointeur vers une Termite
+						termites.push_back(t); //on ajoute le pointeur au vecteur
+						t->vieTermite(g);
+					}
+				}
+			}
+		}
+
+		cout << g << endl;
+
+		cout << "Appuyez sur Entrée pour continuer ou '.' pour quitter: ";
+		c = getchar();
+	} while (c != ".");
+
+
+    // On supprime tous les pointeurs vers des Termite du vecteur termites
+    for (auto& t : termites) {
+        delete t;
+    }
+
+    return 0;
+}
